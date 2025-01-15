@@ -9,7 +9,13 @@ import { getEntraJwksUri, CloudType } from "./utils";
  * @param {HttpRequest} req - The HTTP request.
  * @returns {Promise<boolean>} - A promise that resolves to a boolean value.
  */
-export async function authMiddleware(req?: HttpRequest): Promise<boolean> {
+export async function authMiddleware(req: HttpRequest,
+                                     scope: string | [string],
+                                     allowedTenants: [string] = [config.aadAppTenantId],
+                                     cloud: CloudType = CloudType.Public,
+                                     issuer: string = `https://login.microsoftonline.com/${config.aadAppTenantId}/v2.0`
+                                    ): Promise<boolean> {
+                                      
   // Get the token from the request headers
   const token = req.headers.get("authorization")?.split(" ")[1];
   if (!token) {
@@ -18,7 +24,7 @@ export async function authMiddleware(req?: HttpRequest): Promise<boolean> {
 
   try {
     // Get the JWKS URL for the Microsoft Entra common tenant
-    const entraJwksUri = await getEntraJwksUri(config.aadAppTenantId, CloudType.Public);
+    const entraJwksUri = await getEntraJwksUri(config.aadAppTenantId, cloud);
 
     // Create a new token validator with the JWKS URL
     const validator = new TokenValidator({
@@ -26,10 +32,10 @@ export async function authMiddleware(req?: HttpRequest): Promise<boolean> {
     });
 
     const options = {
-      allowedTenants: [config.aadAppTenantId],
+      allowedTenants: allowedTenants,
       audience: config.aadAppClientId,
-      issuer: `https://login.microsoftonline.com/${config.aadAppTenantId}/v2.0`,
-      scp: ["repairs_read"],
+      issuer: issuer,
+      scp: typeof scope === 'string' ? [scope] : scope
     };
     // Validate the token
     await validator.validateToken(token, options);
