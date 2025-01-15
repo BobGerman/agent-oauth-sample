@@ -14,7 +14,7 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "Repairs-OOB${{APP_NAME_SUFFIX}}",
+    "short": "Repairs-OAuth ${{APP_NAME_SUFFIX}}",
     "full": "Full name for Repairs-OOB"
   },
   "description": {
