@@ -23,6 +23,7 @@ These changes are proposed to better separate the API code (Azure functions) fro
 
 2. Return claims from `authMiddleware` so the API can access the user ID, name, spn, etc. that are commonly used to organize data for each user and/or tenant
 
-3. Small changes
+3. Export all needed symbols from **authMiddleware.ts** so apps can import from just one module and slightly hide the internals
     a. Made the `req` argument on `authMiddleWare` mandatory; it was optional but the code would fail if it wasn't specified
-    b. Move the `CloudType` enum into **authMiddlweare.ts** to make it easier for apps to consume it
+    b. Move the `CloudType` enum into **authMiddlweare.ts** to make it easier for apps to consume it. Ideally apps should not need to import or touch the other middleware functions
+    c. Added commonly needed claims such as `name` and `oid` to the `EntraJwtPayload` interface in **tokenValidator.ts** and exported this interface from **authMiddleware.ts**

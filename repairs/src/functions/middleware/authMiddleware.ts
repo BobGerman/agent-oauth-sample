@@ -1,5 +1,5 @@
 import { HttpRequest } from "@azure/functions";
-import { TokenValidator } from "./tokenValidator";
+import { TokenValidator, EntraJwtPayload } from "./tokenValidator";
 import config from "./config";
 import { getEntraJwksUri } from "./utils";
 
@@ -11,18 +11,20 @@ export enum CloudType {
   China,
 }
 
+export { EntraJwtPayload } from "./tokenValidator";
+
 /**
  * Middleware function to handle authorization using JWT.
  *
  * @param {HttpRequest} req - The HTTP request.
- * @returns {Promise<boolean>} - A promise that resolves to a boolean value.
+ * @returns {Promise<EntraJwtPayload | false>} - A promise that resolves to an array of JWT claims or false if authentication failed
  */
 export async function authMiddleware(req: HttpRequest,
                                      scope: string | [string],
                                      allowedTenants: [string] = [config.aadAppTenantId],
                                      cloud: CloudType = CloudType.Public,
                                      issuer: string = `https://login.microsoftonline.com/${config.aadAppTenantId}/v2.0`
-                                    ): Promise<boolean> {
+                                    ): Promise<EntraJwtPayload | false> {
 
   // Get the token from the request headers
   const token = req.headers.get("authorization")?.split(" ")[1];
@@ -46,12 +48,15 @@ export async function authMiddleware(req: HttpRequest,
       scp: typeof scope === 'string' ? [scope] : scope
     };
     // Validate the token
-    await validator.validateToken(token, options);
+    const claims = await validator.validateToken(token, options);
 
-    return true;
+    return claims;
+
   } catch (err) {
+
     // Handle JWT verification errors
     console.error("Token is invalid:", err);
     return false;
+
   }
 }
