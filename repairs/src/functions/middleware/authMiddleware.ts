@@ -33,7 +33,7 @@ export async function authMiddleware(req: HttpRequest,
   }
 
   try {
-    // Get the JWKS URL for the Microsoft Entra common tenant
+    // Get the JWKS URL for the specified Microsoft Entra cloud
     const entraJwksUri = await getEntraJwksUri(config.aadAppTenantId, cloud);
 
     // Create a new token validator with the JWKS URL

@@ -7,23 +7,32 @@ In this repo you will find 2 branches:
 
 ## Rationale
 
-These changes are proposed to better separate the API code (Azure functions) from the "middleware". The currently generated code requires modifying the middleware to meet application needs; this is not ideal because:
+The currently generated code requires modifying the middleware to meet application needs; this is not ideal because:
 
 * it causes the developer to do extra work to understand and modify the middlweare
 * it will cause the middleware to vary between projects
 * it will make it harder to replace the middleware with a supported token validation library in the future
 
+These changes are proposed to better separate the API code (Azure functions) from the "middleware". 
+
 ## Summary of changes
 
 1. Instead of hard-coding, pass arguments to the `authMiddleware` function for things that are likely to vary in different apps. The default values for optional arguments will be the same as the current hard-coded values, which are indeed the most commonly needed.
+
     a. scope (mandatory) - the authorization scope, currently hard coded to "repairs_read". The proposed argument supports either a single scope (string) or an array of scopes ([string]) since some apps will support many scopes for different permissions.
+
     b. allowedTenants (optional) - an array of tenant IDs that are authorized to use the app
-    d. cloudType (optional) - the cloud type which is used to retrieve the correct JWKS URI to handle common, government, and national clouds
-    c. issuer (optional) - the issuer, which will vary for multi-tenant apps and different clouds
+
+    c. cloudType (optional) - the cloud type which is used to retrieve the correct JWKS URI to handle common, government, and national clouds
+
+    d. issuer (optional) - the issuer, which will vary for multi-tenant apps and different clouds
 
 2. Return claims from `authMiddleware` so the API can access the user ID, name, spn, etc. that are commonly used to organize data for each user and/or tenant
 
-3. Export all needed symbols from **authMiddleware.ts** so apps can import from just one module and slightly hide the internals
+3. Other changes:
+
     a. Made the `req` argument on `authMiddleWare` mandatory; it was optional but the code would fail if it wasn't specified
+
     b. Move the `CloudType` enum into **authMiddlweare.ts** to make it easier for apps to consume it. Ideally apps should not need to import or touch the other middleware functions
+
     c. Added commonly needed claims such as `name` and `oid` to the `EntraJwtPayload` interface in **tokenValidator.ts** and exported this interface from **authMiddleware.ts**
