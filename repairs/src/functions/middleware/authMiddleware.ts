@@ -1,7 +1,15 @@
 import { HttpRequest } from "@azure/functions";
 import { TokenValidator } from "./tokenValidator";
 import config from "./config";
-import { getEntraJwksUri, CloudType } from "./utils";
+import { getEntraJwksUri } from "./utils";
+
+// Define supported EntraID clouds
+export enum CloudType {
+  Public,
+  Ppe,
+  USGovernment,
+  China,
+}
 
 /**
  * Middleware function to handle authorization using JWT.
@@ -15,7 +23,7 @@ export async function authMiddleware(req: HttpRequest,
                                      cloud: CloudType = CloudType.Public,
                                      issuer: string = `https://login.microsoftonline.com/${config.aadAppTenantId}/v2.0`
                                     ): Promise<boolean> {
-                                      
+
   // Get the token from the request headers
   const token = req.headers.get("authorization")?.split(" ")[1];
   if (!token) {

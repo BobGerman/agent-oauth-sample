@@ -25,4 +25,4 @@ These changes are proposed to better separate the API code (Azure functions) fro
 
 3. Small changes
     a. Made the `req` argument on `authMiddleWare` mandatory; it was optional but the code would fail if it wasn't specified
-    b. 
+    b. Move the `CloudType` enum into **authMiddlweare.ts** to make it easier for apps to consume it
