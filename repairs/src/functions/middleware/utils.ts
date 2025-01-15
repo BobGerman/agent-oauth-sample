@@ -1,7 +1,12 @@
-import { CloudType } from "./authMiddleware";
-
 interface OpenIdConfiguration {
   jwks_uri: string;
+}
+
+export enum CloudType {
+  Public,
+  Ppe,
+  USGovernment,
+  China,
 }
 
 /**

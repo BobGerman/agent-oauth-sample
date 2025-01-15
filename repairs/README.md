@@ -33,6 +33,6 @@ These changes are proposed to better separate the API code (Azure functions) fro
 
     a. Made the `req` argument on `authMiddleWare` mandatory; it was optional but the code would fail if it wasn't specified
 
-    b. Move the `CloudType` enum into **authMiddlweare.ts** to make it easier for apps to consume it. Ideally apps should not need to import or touch the other middleware functions
+    b. Expose the `CloudType` enum and `EntraJwtPayload` interface from **authMiddlweare.ts** so developers don't take dependencies on the libry functions, which may change
 
-    c. Added commonly needed claims such as `name` and `oid` to the `EntraJwtPayload` interface in **tokenValidator.ts** and exported this interface from **authMiddleware.ts**
+    c. Added commonly needed claims such as `name` and `oid` to the `EntraJwtPayload` interface in **tokenValidator.ts**

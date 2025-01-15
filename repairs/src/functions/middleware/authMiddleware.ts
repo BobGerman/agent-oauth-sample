@@ -1,16 +1,10 @@
 import { HttpRequest } from "@azure/functions";
 import { TokenValidator, EntraJwtPayload } from "./tokenValidator";
 import config from "./config";
-import { getEntraJwksUri } from "./utils";
+import { getEntraJwksUri, CloudType } from "./utils";
 
-// Define supported EntraID clouds
-export enum CloudType {
-  Public,
-  Ppe,
-  USGovernment,
-  China,
-}
-
+// Export symbols app devs will need to use
+export { CloudType } from "./utils";
 export { EntraJwtPayload } from "./tokenValidator";
 
 /**
